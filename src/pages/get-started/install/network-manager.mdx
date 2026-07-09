@@ -1,0 +1,240 @@
+import {Note, Warning} from "@/components/mdx";
+
+# NetworkManager NetBird Plugin
+
+The NetworkManager NetBird plugin lets NetworkManager start and stop NetBird connections from `nmcli` and GTK-based desktop network settings.
+
+NetworkManager is only the control and status frontend in this integration. The NetBird daemon still owns the WireGuard interface, routes, DNS, firewall rules, profiles, and authentication state.
+
+<Warning>
+    The graphical instructions on this page apply only to GTK-based NetworkManager frontends, such as GNOME Settings and `nm-connection-editor`. The plugin does not provide Qt support, so KDE Plasma's NetworkManager applet and other Qt-based NetworkManager frontends cannot configure NetBird connections through their graphical VPN editor.
+</Warning>
+
+## Requirements
+
+Before using the plugin, install and start the regular NetBird Linux client. See [Linux Installation](/get-started/install/linux).
+
+You also need:
+
+* Linux with NetworkManager.
+* The NetBird daemon running and exposing its local gRPC socket. The default socket is `unix:///var/run/netbird.sock`.
+* The NetworkManager NetBird plugin installed.
+* For desktop configuration, a GTK-based NetworkManager frontend.
+
+Qt-based desktop frontends are not supported. On KDE Plasma, use the CLI instructions on this page instead of the KDE NetworkManager graphical editor.
+
+## Installation
+
+<Note>
+    Installation instructions for the NetworkManager NetBird plugin will be added here later.
+</Note>
+
+After installation, NetworkManager discovers the plugin through `/etc/NetworkManager/VPN/nm-netbird-service.name`. You can verify that the service metadata file exists with:
+
+```bash
+test -f /etc/NetworkManager/VPN/nm-netbird-service.name && echo "service metadata installed"
+```
+
+The plugin package also configures NetworkManager to leave NetBird's default `wt*` interfaces unmanaged. NetBird creates and manages those interfaces directly.
+
+## Manage Connections with nmcli
+
+NetworkManager stores NetBird settings in a VPN connection profile. The plugin maps each NetworkManager profile to a NetBird daemon profile and then asks the NetBird daemon to authenticate, connect, disconnect, and report status.
+
+Replace `<PROFILE NAME>` in the examples below with the NetworkManager connection profile name you want to use.
+
+### Create a Setup Key Connection
+
+Use a setup key for unattended or server-style peers.
+
+```bash
+nmcli connection add type vpn con-name <PROFILE NAME> vpn-type netbird ifname --
+nmcli connection modify <PROFILE NAME> \
+  +vpn.data "auth=setup-key,management-url=https://api.netbird.io:443,admin-url=https://app.netbird.io:443"
+nmcli connection modify <PROFILE NAME> \
+  +vpn.secrets "setup-key=<SETUP KEY>"
+nmcli connection up <PROFILE NAME>
+```
+
+For a self-hosted deployment, replace `management-url` and `admin-url` with your deployment URLs.
+
+### Create an SSO Connection
+
+Use SSO for an interactive desktop or terminal login.
+
+```bash
+nmcli connection add type vpn con-name <PROFILE NAME> vpn-type netbird ifname --
+nmcli connection modify <PROFILE NAME> +vpn.data "auth=sso"
+nmcli connection up <PROFILE NAME> --ask
+```
+
+When prompted, complete the browser-based SSO flow.
+
+<Note>
+    If `auth` is omitted, the plugin treats the connection as `auth=sso`.
+</Note>
+
+### Use a Custom Interface Name
+
+By default, NetBird creates interfaces using the `wt*` pattern. To request a specific NetBird interface name through NetworkManager, set `interface-name`:
+
+```bash
+nmcli connection modify <PROFILE NAME> \
+  +vpn.data "interface-name=wt-netbird"
+```
+
+If you use an interface name that does not match `wt*`, update NetworkManager's unmanaged-device configuration before activating the connection:
+
+```bash
+sudo tee /etc/NetworkManager/conf.d/90-netbird-unmanaged.conf >/dev/null <<'EOF'
+[keyfile]
+unmanaged-devices=interface-name:wt*,interface-name:<INTERFACE NAME>
+EOF
+sudo systemctl reload NetworkManager
+```
+
+Interface names must be 15 bytes or less and cannot be `.`, `..`, or contain `/`, whitespace, or control characters.
+
+### Set a Pre-Shared Key
+
+To configure an optional WireGuard pre-shared key for the NetBird daemon interface, store it as a NetworkManager VPN secret:
+
+```bash
+nmcli connection modify <PROFILE NAME> \
+  +vpn.secrets "pre-shared-key=<PRE-SHARED KEY>"
+```
+
+### Start and Stop a Connection
+
+```bash
+nmcli connection up <PROFILE NAME> --ask
+nmcli connection down <PROFILE NAME>
+```
+
+Only one NetBird engine can be active at a time. Stop the active NetBird NetworkManager connection before starting another one.
+
+### Check Status
+
+Use NetworkManager to check the connection profile and active VPN state:
+
+```bash
+nmcli connection show --active
+nmcli connection show <PROFILE NAME>
+```
+
+Use the NetBird CLI to inspect the daemon and peer state:
+
+```bash
+netbird status
+netbird status --detail  # More detailed view
+```
+
+### Update a Connection
+
+Modify NetworkManager VPN data and secrets, then reconnect the profile.
+
+```bash
+nmcli connection modify <PROFILE NAME> \
+  +vpn.data "management-url=https://api.netbird.io:443,admin-url=https://app.netbird.io:443"
+nmcli connection down <PROFILE NAME>
+nmcli connection up <PROFILE NAME> --ask
+```
+
+To rotate a setup key:
+
+```bash
+nmcli connection modify <PROFILE NAME> \
+  +vpn.secrets "setup-key=<SETUP KEY>"
+nmcli connection down <PROFILE NAME>
+nmcli connection up <PROFILE NAME>
+```
+
+### Delete a Connection
+
+```bash
+nmcli connection delete <PROFILE NAME>
+```
+
+Deleting the NetworkManager profile removes the NetworkManager-side connection. It does not uninstall NetBird or the NetworkManager plugin.
+
+## Manage Connections in GNOME
+
+GNOME Settings uses NetworkManager's GTK-based VPN editor. These steps apply to GNOME and other GTK-based frontends that load NetworkManager VPN editor plugins (although the UI may be slightly different).
+
+### Add a Connection
+
+1. Open **Settings**.
+2. Go to **Network**.
+3. In the **VPN** section, add a new VPN connection.
+4. Select **NetBird**.
+
+<p>
+    <img src="/docs-static/img/get-started/network-manager-netbird/GNOME-Networks.png" alt="GNOME Settings Network page with VPN add button" className="imagewrapper-big"/>
+</p>
+
+<p>
+    <img src="/docs-static/img/get-started/network-manager-netbird/GNOME-NetBird%20VPN.png" alt="GNOME Add VPN dialog with NetBird selected" className="imagewrapper-big"/>
+</p>
+
+### Configure Authentication
+
+Inside GNOME's VPN Editor, navigate to the `Identity` tab to configure NetBird authentication:
+
+Choose one authentication mode:
+
+* **SSO** for an interactive browser login.
+* **Setup key** for unattended enrollment.
+
+The GTK editor includes these fields:
+
+* **Auth mode**: `SSO` or `Setup key`.
+* **Management URL**: defaults to `https://api.netbird.io:443` when blank.
+* **Admin URL**: defaults to `https://app.netbird.io:443` when blank.
+* **Username**: optional NetBird daemon profile owner username.
+* **Setup key**: shown only when **Auth mode** is `Setup key`.
+* **Interface name**, **Hostname**, and **Pre-shared key** in the advanced section.
+
+For self-hosted deployments, set the management URL and admin URL to your deployment URLs. Leave the default NetBird Cloud URLs blank or enter them explicitly.
+
+<p>
+    <img src="/docs-static/img/get-started/network-manager-netbird/NetBird%20Identity.png" alt="GNOME NetBird VPN editor Identity tab" className="imagewrapper-big"/>
+</p>
+
+### Connect and Disconnect
+
+Use the GNOME VPN toggle to connect or disconnect the NetBird profile.
+
+For SSO, GNOME may open a browser or display the SSO verification details. Complete the SSO flow before the activation timeout expires.
+
+<p>
+    <img src="/docs-static/img/get-started/network-manager-netbird/GNOME%20VPN.png" alt="GNOME quick settings menu with NetBird VPN connected" className="imagewrapper-big"/>
+</p>
+
+## Troubleshooting
+
+Check the NetworkManager connection and the NetBird daemon status:
+
+```bash
+nmcli connection show --active
+nmcli connection show <PROFILE NAME>
+netbird status --detail
+```
+
+Follow plugin and daemon logs:
+
+```bash
+journalctl -u nm-netbird-service -f
+journalctl -u netbird -f
+```
+
+If SSO does not open a browser, test the auth dialog browser helper:
+
+```bash
+/usr/libexec/nm-netbird-auth-dialog --test-browser 'https://login.netbird.io/device'
+```
+
+If NetworkManager tries to manage the NetBird interface, confirm the unmanaged interface configuration:
+
+```bash
+cat /etc/NetworkManager/conf.d/90-netbird-unmanaged.conf
+```

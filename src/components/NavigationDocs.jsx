@@ -52,6 +52,10 @@ export const docsNavigation = [
                 href: '/get-started/install',
                 links: [
                     { title: 'Linux', href: '/get-started/install/linux' },
+                    {
+                        title: 'NetworkManager',
+                        href: '/get-started/install/network-manager',
+                    },
                     { title: 'Windows', href: '/get-started/install/windows' },
                     { title: 'MacOS', href: '/get-started/install/macos' },
                     { title: 'Docker', href: '/get-started/install/docker' },
