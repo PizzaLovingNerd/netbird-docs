@@ -84,24 +84,28 @@ If you prefer to have full control over authentication, consider self-hosted alt
 
 ### Step 4: Add API Permissions
 
-1. Click **API permissions** on the left menu
-2. Click **Add a permission**
-3. Select **My APIs** tab → **Netbird** → check `api` permission → **Add permissions**
+Add your signed-in account as an owner of the `Netbird` app registration so its API appears under **My APIs**. This is required even if you're a Global Administrator. See Microsoft's [application ownership instructions](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-configure-app-expose-web-apis#assign-application-owner).
+
+1. Click **Owners** on the left menu, then **Add owners**
+2. Find and select your signed-in account, then click **Select**. Confirm that your account appears in the owners list
+3. Click **API permissions** on the left menu
+4. Click **Add a permission**
+5. Select **My APIs** tab → **Netbird** → check `api` permission → **Add permissions**
 
 <p>
     <img src="/docs-static/img/selfhosted/identity-providers/managed/microsoft-entra-id/azure/azure-netbird-api-permisssions.png" alt="NetBird API permissions" className="imagewrapper-big"/>
 </p>
 
-4. Click **Add a permission** again
-5. Select **Microsoft Graph** → **Application permissions**
-6. Search for `User.Read` and select `User.Read.All`
-7. Click **Add permissions**
+6. Click **Add a permission** again
+7. Select **Microsoft Graph** → **Application permissions**
+8. Search for `User.Read` and select `User.Read.All`
+9. Click **Add permissions**
 
 <p>
     <img src="/docs-static/img/selfhosted/identity-providers/managed/microsoft-entra-id/azure/azure-openid-permissions.png" alt="OpenID permissions" className="imagewrapper-big"/>
 </p>
 
-8. Click **Grant admin consent for Default Directory** → **Yes**
+10. Click **Grant admin consent for Default Directory** → **Yes**
 
 <p>
     <img src="/docs-static/img/selfhosted/identity-providers/managed/microsoft-entra-id/azure/azure-grant-admin-conset.png" alt="Grant admin consent" className="imagewrapper-big"/>
