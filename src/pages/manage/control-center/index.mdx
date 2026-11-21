@@ -54,7 +54,7 @@ Use this view to see what resources a specific user can access.
 </p>
 
 - Click the user node, then search or choose another user from the dropdown to switch focus.
-- The graph shows the users peers, access control policy nodes and the reachable resources.
+- The graph shows the user's peers, access control policy nodes and the reachable resources.
 - Click a peer to switch focus only to that specific peer.
 - Click a policy chip to open the standard policy editor. Changes you save are reflected in the graph immediately.
 
@@ -69,7 +69,7 @@ Use this to validate team-level access.
 
 - Click a group node, then search or choose from the dropdown to switch groups.
 - The layout shows which resources that group can reach and via which policies.
-- View-only for topology here; create or delete groups in the Groups section outside Control Center. Group-based access is the recommended way to manage permissions.
+- You can rename a group and change its members here. Create or delete groups on the Groups page or in Draft Mode. Group-based access is the recommended way to manage permissions.
 
 Common checks:
 
@@ -84,8 +84,8 @@ Use this to see who can access resources in your routed [networks](/manage/netwo
          alt="Control Center Network View" className="imagewrapper-big"/>
 </p>
 
-- Toggle **All Networks** or select a specific network.
-- The network node shows its resources. Connecting lines display the port allowed by the policy and which groups have access.
+- Choose **All Networks** or a specific network from the selector.
+- The network node shows its resources. Policy chips display the allowed ports (for example, `TCP:5432,5433`), and connecting lines show which groups have access.
 - Click any policy chip to edit it in the standard editor. NetBird Networks and routing peers enable access to private subnets and IP resources.
 
 ### Agent Network
@@ -94,7 +94,7 @@ When [Agent Network](/agent-network) is enabled for your account, the **Peers**,
 
 ## Focus Mode
 
-When the graph gets busy, focus a single node to see only what is connected to it. Right-click a node and choose **Focus**, or press `F` and then select the node.
+When the graph gets busy, focus a single node to see only what is connected to it. Right-click a node and choose **Focus**, or press `F` and then select the node. **Focus** is only available when the view shows at least two policies.
 
 <p>
     <img src="/docs-static/img/manage/control-center/control-center-focus-context-menu.png" alt="The right-click menu on a policy node with the Focus option highlighted"
@@ -120,7 +120,7 @@ For changes that span several components, **Draft Mode** lets you stage the whol
 ## Quick Start
 
 1. Open **Control Center** at the top of the dashboard sidebar.
-2. Pick a tab: **Peers**, **Users**, **Groups**, or **Networks**.
+2. Pick a tab: **Peer**, **User**, **Group**, or **Networks**.
 3. Click a node to focus, then follow the policy chips to the target resource.
 4. Click a policy chip to edit it, then save. The graph updates right away.
 
