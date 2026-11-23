@@ -66,11 +66,13 @@ ACL Groups on **Routes** (this page) match against peer NetBird IPs only, which 
 1. Routing peer cannot reach the destination network
 2. Masquerade is disabled and no return route exists
 3. Firewall is blocking traffic
+4. ACL Group has no policies granting access
 
 **Solution:**
 - Test from the routing peer: `ping <destination>` directly
 - If masquerade is off, verify return routes are configured on the remote network
 - Check the OS firewall on the routing peer: `iptables -L -n` or equivalent
+- Check that ACL Group policies exist
 
 ### Connection works one way
 

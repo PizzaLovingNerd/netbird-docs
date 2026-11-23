@@ -114,7 +114,7 @@ Once a peer at the other site is reachable, make it permanent. The method depend
 ls /etc/netplan/
 ```
 
-Follow **only one** of the two methods below — the one that matches what `ls` showed. They're alternatives, not consecutive steps: if you see `.yaml` files use Netplan (most Ubuntu hosts); if the directory is empty or missing use systemd-networkd (Debian, minimal installs). Don't mix them — on Netplan hosts, systemd-networkd config you add by hand is silently ignored.
+Follow **only one** of the two methods below — the one that matches what `ls` showed. They're alternatives, not consecutive steps: if you see `.yaml` files use Netplan (most Ubuntu hosts); if the directory is empty or missing use systemd-networkd (Debian, minimal installs). Don't mix them — on Netplan hosts, a systemd-networkd `.network` file you add by hand for an interface Netplan manages is silently ignored when Netplan's generated `10-netplan-<IFACE>.network` sorts first.
 
 Both methods need your LAN interface name — find it with `ip -br addr` (look for the connection carrying the device's local IP, e.g. `eth0` or `ens18`). Substitute it wherever the steps below show `<IFACE>`.
 
