@@ -25,7 +25,7 @@ Because routing peers are typically headless servers, register them with [setup 
 NetBird offers two ways to configure routing peers. Both are actively maintained.
 
 **[Networks](/manage/networks) (newer, recommended where possible)**
-- Mandatory groups for both routing peers and resources. Traffic is denied by default until a policy permits it.
+- Optional groups for both routing peers and resources. Traffic is denied by default until a policy permits it.
 - Resources are typed: IP, IP range, or domain.
 - Access control is built in from the start.
 
@@ -288,7 +288,7 @@ An exit node is a routing peer with a `0.0.0.0/0` route. Internet-bound traffic 
 
 Specifics:
 
-- IPv6 is blocked to prevent leakage outside the tunnel.
+- IPv6 is blocked to prevent leakage outside the tunnel when the client peer has no NetBird IPv6 address. When IPv6 is enabled for the client peer, management adds a matching `::/0` route and IPv6 internet traffic also goes through the exit node.
 - Masquerade is on by default and required in practice.
 - The minimum policy for an exit node to function is ICMP from source group to the routing peer group.
 - Auto Apply controls whether clients use the exit node automatically (v0.55.0+) or only when manually selected.

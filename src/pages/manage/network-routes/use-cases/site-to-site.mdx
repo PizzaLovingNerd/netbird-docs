@@ -147,11 +147,11 @@ sudo netplan apply
 Recent Netplan needs `0600` permissions on files under `/etc/netplan/`. Run `sudo chmod 0600 /etc/netplan/*.yaml` if `netplan apply` warns.
 </Note>
 
-**Option B — systemd-networkd** (the `/etc/netplan/` directory was empty) — create a drop-in for your interface. Replace both `<IFACE>` below with your interface name, then paste the block — it creates the file and reloads in one go:
+**Option B — systemd-networkd** (the `/etc/netplan/` directory was empty) — create a drop-in for your interface's `.network` file (check the `Network File:` line of `networkctl status <IFACE>`, e.g. `10-lan0.network`). Replace both `<NETWORK_FILE>` below with that file name, then paste the block — it creates the file and reloads in one go:
 
 ```bash
-sudo mkdir -p /etc/systemd/network/<IFACE>.network.d
-sudo tee /etc/systemd/network/<IFACE>.network.d/100-netbird.conf > /dev/null <<'EOF'
+sudo mkdir -p /etc/systemd/network/<NETWORK_FILE>.d
+sudo tee /etc/systemd/network/<NETWORK_FILE>.d/100-netbird.conf > /dev/null <<'EOF'
 [Route]
 Destination=10.1.0.0/24
 Gateway=10.0.0.50

@@ -82,7 +82,7 @@ Choose the peer that will serve as your exit node.
 
 ### 3. Configure the Exit Node
 
-Click **Add Exit Node**. In the dialog, assign one or more distribution groups to specify which peers should use this exit node.
+Click **Set Up Exit Node** (or **Add Exit Node** if the peer already has one). In the dialog, assign one or more distribution groups to specify which peers should use this exit node.
 
 <p>
     <img src="/docs-static/img/manage/network-routes/use-cases/exit-nodes/netbird-peers-add-exit-node.png" alt="Add exit node dialog" className="imagewrapper-big"/>
@@ -124,7 +124,7 @@ Set up one routing peer in each region. Both need masquerading and a stable inte
 
 ### 2. Add both peers to the same exit node
 
-In **Network Routing** → **Routes**, click **Add Peer** in the exit node's **High Availability** column and select the `us-west` peer. Leave the metric identical on both. Do not use **Add Exit Node** on the `us-west` peer: that creates a second, separate exit node.
+In **Network Routing** → **Routes**, click **Add Peer** in the exit node's **High Availability** column and select the `us-west` peer. Leave the metric identical on both. Do not use **Set Up Exit Node** on the `us-west` peer: that creates a second, separate exit node.
 
 Adding the regions as two separate exit nodes does not work, and fails in a way that is easy to miss. Metrics and nearest-peer selection only apply between routing peers of the same exit node. Separate exit nodes instead appear on each device as independent choices in its exit node selector, and with [Auto Apply](#exit-node-selection-and-auto-apply) enabled (the default) the client activates exactly one: whichever exit node's name sorts first alphabetically. Metrics and latency play no part in that choice. If the activated exit node's routing peer goes offline, the device keeps it selected and loses internet access entirely, even while another exit node's routing peer is online and connected. One exit node with multiple routing peers gives you selection and failover; separate exit nodes give you neither.
 

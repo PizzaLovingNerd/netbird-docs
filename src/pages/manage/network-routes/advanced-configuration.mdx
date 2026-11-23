@@ -41,9 +41,9 @@ ACL Groups on **Routes** (this page) match against peer NetBird IPs only, which 
 |--------|----------|----------------|
 | Supported scenarios | All (VPN-to-Site, Site-to-VPN, Site-to-Site) | All (VPN-to-Site, Site-to-VPN, Site-to-Site) |
 | Access control | Per-resource policies | Per-route with ACL Groups |
-| Masquerade | Always enabled | Configurable |
+| Masquerade | Configurable | Configurable |
 | Setup complexity | Simpler | More manual configuration |
-| Routing peer redundancy | Built-in | Manual configuration |
+| Routing peer redundancy | Built-in | Built-in |
 | Policy requirement | Resource policies only | Routing peer + ACL Group policies |
 
 ## Troubleshooting
@@ -54,13 +54,9 @@ ACL Groups on **Routes** (this page) match against peer NetBird IPs only, which 
 
 **Causes:**
 1. No access policy grants access to the routing peer
-2. Routing peer is offline
-3. ACL Group has no policies granting access
 
 **Solution:**
 - Ensure at least one policy connects to the routing peer's group
-- Verify routing peer status in the dashboard
-- Check that ACL Group policies exist
 
 ### Traffic times out
 
@@ -111,9 +107,6 @@ ACL Groups on **Routes** (this page) match against peer NetBird IPs only, which 
 ```bash
 # NetBird status
 netbird status
-
-# Active routes
-netbird routes list
 
 # System routes
 ip route show
